@@ -2,16 +2,15 @@
 
 <?php include 'db.php'; 
 
-$page = (isset($_GET['page']) ? (int)$_GET['page'] : 1);
-$perPage = (isset($_GET['per-page']) && (int)($_GET['per-page']) <= 50 ? (int)$_GET['per-page'] : 5);
-$start = ($page > 1) ? ($page * $perPage) - $perPage : 0;
+if(isset($_POST['search'])){
 
-$sql = "select * from tasks limit ".$start." , ".$perPage."";
-$total = $db->query("select * from tasks")->num_rows;
-$pages = ceil($total / $perPage);
+    $name = htmlspecialchars($_POST['search']);
 
-$rows = $db->query($sql);
+    $sql = "select * from tasks where name like '%$name%'";
 
+    $rows = $db->query($sql);
+
+}
 
 ?>
 
@@ -90,6 +89,12 @@ $rows = $db->query($sql);
 
                     </div>
 
+                    <?php if(mysqli_num_rows($rows) < 1): ?>
+
+                        <h2 class="text-dengar text-center"> Nothing is found!</h2>
+
+                    <?php else: ?>   
+
                     <table class="table table-hover">
 
                         <thead>
@@ -115,13 +120,10 @@ $rows = $db->query($sql);
                         </tbody>
                     </table>
 
-                    <div class="text-center">
-                        <ul style="justify-content: center;" class="pagination m-5">
-                        <?php for($i=1; $i<=$pages; $i++): ?>
-                            <li class="page-item"><a class="page-link" href="?page=<?php echo $i; ?>&per-page=<?php echo $perPage; ?>"><?php echo $i; ?></a></li>
+                        <?php endif; ?>
 
-                            <?php endfor; ?>
-                        </ul>
+                    <div class="text-center">
+                        <a href="index.php" class="btn btn-warning m-5">Back</a>
                     </div>
 
                 </div>
